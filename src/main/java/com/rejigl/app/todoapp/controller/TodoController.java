@@ -1,7 +1,6 @@
 package com.rejigl.app.todoapp.controller;
 
 import com.rejigl.app.todoapp.model.Todo;
-import com.rejigl.app.todoapp.service.LoginService;
 import com.rejigl.app.todoapp.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -37,7 +36,7 @@ public class TodoController {
 
     @RequestMapping(value = "/list-todo", method = RequestMethod.GET)
     public String showTodoListPage(ModelMap model){
-        String name = (String)model.get("name");
+        String name = getLoggedInUserName(model);
         model.put("todos", service.retrieveTodos(name));
         return LIST_TODO_PAGE;
     }
@@ -45,7 +44,7 @@ public class TodoController {
     @RequestMapping(value = "/upsert-todo", method = RequestMethod.GET)
     public String showAddTodoPage(ModelMap model)
     {
-        model.addAttribute("todo", new Todo(0, "",  (String)model.get("name"), "", Date.from(Instant.EPOCH), false));
+        model.addAttribute("todo", new Todo(0, "", getLoggedInUserName(model), "", new Date(), false));
         return TODO_PAGE;
     }
 
@@ -55,7 +54,7 @@ public class TodoController {
             return TODO_PAGE;
         }
 
-        service.addTodo(todo.getTitle(), (String)model.get("name"), todo.getDescription(), Date.from(Instant.EPOCH), false );
+        service.addTodo(todo.getTitle(), getLoggedInUserName(model), todo.getDescription(), todo.getTargetDate(), false );
         return "redirect:/"+LIST_TODO_PAGE;
     }
 
@@ -79,10 +78,14 @@ public class TodoController {
             return TODO_PAGE;
         }
 
-        todo.setUsername((String)model.get("name"));
+        todo.setUsername(getLoggedInUserName(model));
         service.updateTodo(todo);
 
         return "redirect:/"+ LIST_TODO_PAGE;
+    }
+
+    private String getLoggedInUserName(ModelMap model) {
+        return (String) model.get("name");
     }
 
 }

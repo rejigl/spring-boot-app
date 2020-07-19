@@ -1,11 +1,18 @@
 package com.rejigl.app.todoapp.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
+@Entity
 public class Todo {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
     @Size(min=10, message="Enter at least ${min} characters")
@@ -18,6 +25,14 @@ public class Todo {
 
     public Todo(){
 
+    }
+
+    public Todo( String title, String username, String description, Date targetDate, boolean isDone) {
+        this.title = title;
+        this.username = username;
+        this.description = description;
+        this.targetDate = targetDate;
+        this.isDone = isDone;
     }
 
     public Todo(int id, String title, String username, String description, Date targetDate, boolean isDone) {
